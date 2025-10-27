@@ -31,6 +31,7 @@ export default class ConsentManager {
         this.loadConsents()
         this.applyConsents()
         this.savedConsents = {...this.consents}
+        this.persistServices()
     }
 
     get storageMethod(){
@@ -51,6 +52,10 @@ export default class ConsentManager {
 
     get cookieExpiresAfterDays(){
         return this.config.cookieExpiresAfterDays || 120
+    }
+
+    get servicesStorageKey(){
+        return `${this.storageName}:services`
     }
 
     get defaultConsents(){
@@ -137,6 +142,105 @@ export default class ConsentManager {
             this.notify('consents', this.consents)
         }
         return this.consents
+    }
+
+    serializeServices(services){
+        const definitions = services || this.config.services
+        if (!Array.isArray(definitions))
+            return []
+        return definitions.map(service => this._serializeValue(service)).filter(service => service !== undefined)
+    }
+
+    deserializeServices(serializedServices){
+        if (!Array.isArray(serializedServices))
+            return []
+        return serializedServices.map(service => this._deserializeValue(service))
+    }
+
+    persistServices(services){
+        const definitions = services || this.config.services
+        if (this.auxiliaryStore === undefined || this.auxiliaryStore.setWithKey === undefined)
+            return
+        try {
+            const serialized = JSON.stringify(this.serializeServices(definitions))
+            this.auxiliaryStore.setWithKey(this.servicesStorageKey, serialized)
+        } catch (error) {
+            // eslint-disable-next-line no-console
+            console.warn('Unable to persist Klaro service definitions.', error)
+        }
+    }
+
+    loadPersistedServices(){
+        if (this.auxiliaryStore === undefined || this.auxiliaryStore.getWithKey === undefined)
+            return undefined
+        const serialized = this.auxiliaryStore.getWithKey(this.servicesStorageKey)
+        if (!serialized)
+            return undefined
+        try {
+            const parsed = JSON.parse(serialized)
+            return this.deserializeServices(parsed)
+        } catch (error) {
+            // eslint-disable-next-line no-console
+            console.warn('Unable to restore Klaro service definitions.', error)
+            if (this.auxiliaryStore.deleteWithKey !== undefined)
+                this.auxiliaryStore.deleteWithKey(this.servicesStorageKey)
+            return undefined
+        }
+    }
+
+    updateServices(services, opts){
+        if (!Array.isArray(services))
+            throw new Error('updateServices expects an array of service definitions.')
+        const options = {persist: true, apply: true, ...(opts || {})}
+        this.config.services = services
+        this._checkConsents()
+        if (options.persist)
+            this.persistServices(services)
+        if (options.apply)
+            this.applyConsents()
+        this.savedConsents = {...this.consents}
+        this.notify('services', services)
+    }
+
+    _serializeValue(value){
+        if (value === undefined)
+            return undefined
+        if (value === null)
+            return null
+        if (value instanceof RegExp)
+            return {__klaroType: 'RegExp', source: value.source, flags: value.flags}
+        if (Array.isArray(value))
+            return value.map(entry => this._serializeValue(entry))
+        if (typeof value === 'function')
+            return undefined
+        if (typeof value === 'object'){
+            const serialized = {}
+            for (const [key, entry] of Object.entries(value)){
+                const serializedValue = this._serializeValue(entry)
+                if (serializedValue !== undefined)
+                    serialized[key] = serializedValue
+            }
+            return serialized
+        }
+        return value
+    }
+
+    _deserializeValue(value){
+        if (value === undefined)
+            return undefined
+        if (value === null)
+            return null
+        if (Array.isArray(value))
+            return value.map(entry => this._deserializeValue(entry))
+        if (typeof value === 'object'){
+            if (value.__klaroType === 'RegExp')
+                return new RegExp(value.source, value.flags || '')
+            const deserialized = {}
+            for (const [key, entry] of Object.entries(value))
+                deserialized[key] = this._deserializeValue(entry)
+            return deserialized
+        }
+        return value
     }
 
     saveAndApplyConsents(eventType){

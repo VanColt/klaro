@@ -12,6 +12,7 @@ import {t, language} from './utils/i18n'
 import {themes} from './themes'
 import {currentScript, dataset, applyDataset} from './utils/compat'
 export {update as updateConfig} from './utils/config'
+import RemoteConfigProvider from './config/remote-config-provider'
 import './scss/klaro.scss'
 
 let defaultConfig
@@ -202,6 +203,17 @@ function getKlaroApiUrl(script){
     return null
 }
 
+function getRemoteConfigUrl(hashParams, script){
+    if (hashParams.has('klaro-config-url'))
+        return hashParams.get('klaro-config-url')
+    if (script === null)
+        return null
+    const klaroRemoteUrl = script.getAttribute('data-klaro-config-url')
+    if (klaroRemoteUrl !== null)
+        return klaroRemoteUrl
+    return null
+}
+
 function getKlaroConfigName(hashParams, script){
     // hash parameters always win
     if (hashParams.has('klaro-config')){
@@ -261,7 +273,19 @@ export function setup(config){
         const klaroId = getKlaroId(script)
         const klaroApiUrl = getKlaroApiUrl(script)
         const klaroConfigName = getKlaroConfigName(hashParams, script);
-        if (klaroId !== null){
+        const remoteConfigUrl = getRemoteConfigUrl(hashParams, script)
+        if (remoteConfigUrl !== null){
+            const provider = new RemoteConfigProvider(remoteConfigUrl)
+            provider.load(klaroConfigName).then((config) => {
+                if (executeEventHandlers("remoteConfigLoaded", config, provider) === true)
+                    return
+                defaultConfig = config
+                doOnceLoaded(() => initialize({configProvider: provider}))
+            }).catch((err) => {
+                console.error(err, "cannot load Klaro remote config")
+                executeEventHandlers("remoteConfigFailed", err, provider)
+            })
+        } else if (klaroId !== null){
             // we initialize with an API backend
             const api = new KlaroApi(klaroApiUrl, klaroId, {testing: testing})
             if (window.klaroApiConfigs !== undefined){
@@ -341,4 +365,4 @@ export function version(){
     return VERSION
 }
 
-export {language, defaultConfig, defaultTranslations}
+export {language, defaultConfig, defaultTranslations, RemoteConfigProvider}
