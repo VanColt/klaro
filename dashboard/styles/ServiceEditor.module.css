@@ -1,0 +1,125 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fieldGroup input,
+.fieldGroup textarea {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: var(--color-surface-alt);
+  color: inherit;
+}
+
+.fieldGroup textarea {
+  resize: vertical;
+}
+
+.switches {
+  display: grid;
+  gap: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  padding: 16px;
+  background: var(--color-surface-alt);
+}
+
+.switches label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.purposeInputRow {
+  display: flex;
+  gap: 12px;
+}
+
+.purposeInputRow input {
+  flex: 1;
+}
+
+.purposeInputRow button {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: transparent;
+  color: inherit;
+}
+
+.purposeList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.purposeList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-surface-alt);
+  border-radius: 12px;
+  padding: 10px 16px;
+}
+
+.purposeList button {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: transparent;
+  border-radius: 9999px;
+  padding: 6px 12px;
+  color: inherit;
+}
+
+.purposeList button:hover {
+  border-color: rgba(248, 113, 113, 0.6);
+  color: var(--color-danger);
+}
+
+.empty {
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.footer button {
+  padding: 12px 20px;
+  border-radius: 9999px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: transparent;
+  color: inherit;
+}
+
+.primary {
+  background: var(--color-primary);
+  border-color: transparent;
+  color: #0b1120;
+  font-weight: 600;
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: 0.85rem;
+}

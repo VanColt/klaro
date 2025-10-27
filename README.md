@@ -168,3 +168,11 @@ Do you have problems using Klaro? If so, we want to know it! Just open an issue 
 * The website on which Klaro is installed (if possible)
 * The config file you're using (a link is sufficient)
 * The version of Klaro that you're using (you can get this by opening the developer tools of your browser, going to the "Console" tab and typing `klaro.version()` in the JS console.)
+
+## Remote configuration dashboard
+
+A Next.js dashboard for managing Klaro remote configurations lives in the
+[`dashboard/`](dashboard) directory. It connects to the backend endpoints described in
+[`docs/backend-api.md`](docs/backend-api.md) and offers a workflow to inspect and edit
+service definitions before publishing them. Refer to [`dashboard/README.md`](dashboard/README.md)
+for installation and usage instructions.

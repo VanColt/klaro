@@ -1,0 +1,76 @@
+.services {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+}
+
+.header h2 {
+  margin-bottom: 4px;
+}
+
+.header p {
+  color: var(--color-text-muted);
+}
+
+.tableWrapper {
+  flex: 1;
+  overflow: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+.table th,
+.table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.table tbody tr:hover {
+  background: rgba(96, 165, 250, 0.08);
+}
+
+.selected {
+  background: rgba(96, 165, 250, 0.12);
+}
+
+.empty {
+  text-align: center;
+  padding: 24px;
+  color: var(--color-text-muted);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions button {
+  padding: 8px 12px;
+  border-radius: 9999px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: transparent;
+  color: inherit;
+}
+
+.actions button:hover {
+  border-color: rgba(96, 165, 250, 0.6);
+}
+
+.danger {
+  border-color: rgba(248, 113, 113, 0.6);
+  color: var(--color-danger);
+}
+
+.danger:hover {
+  background: rgba(248, 113, 113, 0.08);
+}
+
+.actionsHeader {
+  width: 160px;
+}
